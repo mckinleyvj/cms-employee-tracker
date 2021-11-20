@@ -22,6 +22,7 @@ db.connect( (err) => {
 });
 
 const welcome = () => {
+  console.clear();
   console.log(`-----------------------------------------`);
   console.log(`           Employee CMS System`);
   console.log(`=========================================`);
@@ -43,17 +44,19 @@ const mainMenu = () => {
     ])
     .then(res => {
       const selection = res.choice;
-      // console.log(`${selection}`);
       switch (selection) {
         case "1. View Departments":
+          console.clear();
           viewDept();
         break;
 
         case "2. View Roles":
+          console.clear();
           viewRoles();
         break;
 
         case "3. View Employees":
+          console.clear();
           viewEmp();
         break;
       }
@@ -62,13 +65,14 @@ const mainMenu = () => {
 
 //DEPARTMENT
 const viewDept = () => {
-  const sql = `SELECT * FROM department;`;
+  const sql = `SELECT * FROM department ORDER BY id`;
   db.query(sql, (err, res) => {
     if (err) {
       console.log(`Something went wrong. \n${err}`);
       return;
     }
-    console.log(`\n=========================================`);
+    console.log(`\nDisplaying table: Department`);
+    console.log(`=========================================`);
     console.table(res);
     viewDeptMenu();
   })
@@ -106,6 +110,8 @@ const viewDeptMenu = () => {
                   console.log(`Something went wrong. \n${err}`);
                   return;
                 }
+                console.clear();
+                console.log(`Successfully added new record.`);
                 viewDept();
               })
             })
@@ -134,6 +140,8 @@ const viewDeptMenu = () => {
                           console.log(`Something went wrong. \n${err}`);
                           return;
                         }
+                        console.clear();
+                        console.log(`Successfully updated record.`);
                         viewDept();
                       })
                     })
@@ -155,13 +163,15 @@ const viewDeptMenu = () => {
                     console.log(`Something went wrong. \n${err}`);
                     return;
                   }
+                  console.clear();
+                  console.log(`Successfully deleted record.`);
                   viewDept();
                 })
               })
           break;
 
           case "d. Back to Main Menu":
-              mainMenu();
+              welcome();
           break;
         }
       })
@@ -169,13 +179,14 @@ const viewDeptMenu = () => {
 
 //ROLES
 const viewRoles = () => {
-  const sql = `SELECT * FROM roles;`;
+  const sql = `SELECT roles.id, roles.role_title, roles.salary, department.id AS dept_id, department.dept_name FROM department, roles WHERE department.id = roles.dept_id ORDER BY roles.id;`;
   db.query(sql, (err, res) => {
     if (err) {
       console.log(`Something went wrong. \n${err}`);
       return;
     }
-    console.log(`\n=========================================`);
+    console.log(`\nDisplaying table: Roles`);
+    console.log(`=========================================`);
     console.table(res);
     viewRolesMenu();
   })
@@ -188,95 +199,70 @@ const viewRolesMenu = () => {
     message: "Roles- What would you like to do?",
     name: "choice",
     choices: [
-              "a. Add Roles", 
-              "b. Update Roles",
-              "c. Delete Roles",
+              "a. Add Role", 
+              "b. Update Role",
+              "c. Delete Role",
               "d. Back to Main Menu"
             ]
     },
     ])
     .then(res => {
       const selection = res.choice;
+      const showDeptSql = `SELECT * FROM department ORDER BY id`;
       switch (selection) {
-        case "a. Add Roles":
-          viewRolesDeptTable();
+          case "a. Add Role":
+              db.query(showDeptSql, (err,res) => {
+                console.log(`\nDisplaying table: Department`);
+                console.log(`=========================================`);
+                console.table(res);
+                addRole();
+              })
           break;
   
-          case "b. Update Department":
+          case "b. Update Role":
+              db.query(showDeptSql, (err,res) => {
+                console.log(`\nDisplaying table: Department`);
+                console.log(`=========================================`);
+                console.table(res);
+                updateRole();
+              })
+          break;
+  
+          case "c. Delete Role":
             inquirer.prompt([
               {
                 name: "the_id",
                 type: "input",
-                message: "Please select the id of department you wish to update:"
-              }
-              ]).then(function(res) {
-                const ans_id = res.the_id;
-                inquirer.prompt([
-                  {
-                    name: "dept_name",
-                    type: "input",
-                    message: "Please enter new department name:"
-                  }
-                  ]).then(function(res) {
-                    const ans_dept_name = res.dept_name;
-                    const updateSql = `UPDATE department SET dept_name = '${ans_dept_name}' WHERE id = ${ans_id};`;
-                    db.query(updateSql, (err,res) => {
-                        if (err) {
-                          console.log(`Something went wrong. \n${err}`);
-                          return;
-                        }
-                        viewRoles();
-                      })
-                    })
-                  })
-          break;
-  
-          case "c. Delete Department":
-            inquirer.prompt([
-              {
-                name: "the_id",
-                type: "input",
-                message: "Please select the id of department you wish to delete:"
+                message: "Please select the id of the role you wish to delete:"
               }
               ]).then(function(res) {
                 const ans = res.the_id;
-                const deleteSql = `DELETE FROM department WHERE id = ${ans};`;
+                const deleteSql = `DELETE FROM roles WHERE id = ${ans};`;
                 db.query(deleteSql, (err,res) => {
                   if (err) {
                     console.log(`Something went wrong. \n${err}`);
                     return;
                   }
+                  console.clear();
+                  console.log(`Successfully deleted record.`);
                   viewRoles();
                 })
               })
           break;
 
           case "d. Back to Main Menu":
-              mainMenu();
+            welcome();
           break;
         }
       })
 };
 
-const viewRolesDeptTable = () => {
-  const sql = `SELECT department.id, department.dept_name, roles.role_title FROM department, roles WHERE department.id = roles.dept_id;`;
-  db.query(sql, (err, res) => {
-    if (err) {
-      console.log(`Something went wrong. \n${err}`);
-      return;
-    }
-    console.log(`\n=========================================`);
-    console.table(res);
-    addRoles();
-  });
-};
-
-const addRoles = () => {
+const addRole = () => {
   inquirer.prompt([
     {
       name: "role_title",
       type: "input",
-      message: "Add Role- Please enter new Role name:"
+      message: "Add Role- Please enter new Role title:"
     },
     {
       name: "role_salary",
@@ -286,22 +272,68 @@ const addRoles = () => {
     {
       name: "role_dept",
       type: "input",
-      message: "Add Role- Please enter the department number for this role:"
+      message: "Add Role- Please enter the dept id for this role:"
     }
     ]).then(res => {
       const role_title = res.role_title;
       const role_salary = res.role_salary;
       const role_dept = res.role_dept;
-      console.log(`${role_title} ${role_salary} ${role_dept}`);
-      // const insertsql = `INSERT INTO roles (role_title, salary, dept_id) VALUE ('${ans}');`;
-      // db.query(insertsql, (err,res) => {
-      //   if (err) {
-      //     console.log(`Something went wrong. \n${err}`);
-      //     return;
-      //   }
-      //   viewRoles();
-      // })
+
+      const insertsql = `INSERT INTO roles (role_title, salary, dept_id) VALUE ('${role_title}','${role_salary}','${role_dept}');`;
+      db.query(insertsql, (err,res) => {
+        if (err) {
+          console.log(`Something went wrong. \n${err}`);
+          return;
+        }
+        console.clear();
+        console.log(`Successfully added new record.`);
+        viewRoles();
+      })
     })
+};
+
+const updateRole = () => {
+  inquirer.prompt([
+    {
+      name: "the_id",
+      type: "input",
+      message: "Please select the id of the role you wish to update:"
+    }
+    ]).then(function(res) {
+      const ans_id = res.the_id;
+      inquirer.prompt([
+        {
+          name: "role_title",
+          type: "input",
+          message: "Please enter new role title:"
+        },
+        {
+          name: "role_salary",
+          type: "input",
+          message: "Please enter role salary:"
+        },
+        {
+          name: "role_dept_id",
+          type: "input",
+          message: "Please enter dept id for this role:"
+        }
+        ]).then(function(res) {
+          const ans_role_title = res.role_title;
+          const ans_role_salary = res.role_salary;
+          const ans_role_dept_id = res.role_dept_id;
+
+          const updateSql = `UPDATE roles SET role_title = '${ans_role_title}', salary = '${ans_role_salary}', dept_id = '${ans_role_dept_id}' WHERE id = ${ans_id};`;
+          db.query(updateSql, (err,res) => {
+              if (err) {
+                console.log(`Something went wrong. \n${err}`);
+                return;
+              }
+              console.clear();
+              console.log(`Successfully updated record.`);
+              viewRoles();
+            })
+          })
+        })
 };
 
 //EMPLOYEES
