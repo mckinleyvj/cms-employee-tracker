@@ -61,8 +61,6 @@ npm run start
 
 Please find the demonstration video here https://watch.screencastify.com/v/UY4s4iBS1B57434jNniw
 
-<iframe src="https://drive.google.com/file/d/131BncMdSvBezfd5rizVr5Bb_lrYcgIpm/preview" width="640" height="480"></iframe>
-
 [Back to top](#cms-employee-tracker)
 
 ## Usage
