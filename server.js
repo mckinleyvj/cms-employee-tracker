@@ -338,15 +338,161 @@ const updateRole = () => {
 
 //EMPLOYEES
 const viewEmp = () => {
-  const sql = `SELECT * FROM employee;`;
-  db.query(sql, (err, res) => {
+  const empSql = `SELECT e.id, e.first_name, e.last_name, e.role_id, r.role_title, e.manager_id FROM employee e, roles r WHERE e.role_id = r.id ORDER BY e.id;`;
+  db.query(empSql, (err, resp) => {
     if (err) {
       console.log(`Something went wrong. \n${err}`);
       return;
     }
+    console.log(`\nDisplaying table: Employees`);
     console.log(`=========================================`);
-    console.table(res);
-    console.log(`=========================================`);
-    mainMenu();
+    console.table(resp);
+    viewEmpMenu();
   });
+};
+
+const viewEmpMenu = () => {
+  inquirer.prompt([
+    {
+    type: "list",
+    message: "Employees- What would you like to do?",
+    name: "choice",
+    choices: [
+              "a. Add Employee", 
+              "b. Update Employee",
+              "c. Delete Employee",
+              "d. Back to Main Menu"
+            ]
+    },
+    ])
+    .then(res => {
+      const selection = res.choice;
+      switch (selection) {
+        case "a. Add Employee":
+          inquirer.prompt([
+            {
+              name: "first_name",
+              type: "input",
+              message: "Add Employee- Please enter New employee's first name:"
+            },
+            {
+              name: "last_name",
+              type: "input",
+              message: "Add Employee- Please enter New employee's last name:"
+            },
+            {
+              name: "role_id",
+              type: "input",
+              message: "Add Employee- Please enter New employee's role id:"
+            },
+            {
+              name: "manager_id",
+              type: "input",
+              message: "Add Employee- Please enter New employee's manager id:",
+              validate: value => {
+                const valid = !isNaN(parseInt(value));
+
+                if (valid) {
+                  return valid;
+                }
+
+                if (!valid) {
+                  return true;
+                }
+                
+            },
+            }
+
+            ]).then(function(res) {
+              if (res.manager_id === '') {
+                const first_name = res.first_name;
+                const last_name = res.last_name;
+                const role_id = res.role_id;
+                const insertsql = `INSERT INTO employee (first_name, last_name, role_id) VALUE ('${first_name}','${last_name}','${role_id}');`;
+                db.query(insertsql, (err,res) => {
+                  if (err) {
+                    console.log(`Something went wrong. \n${err}`);
+                    return;
+                  }
+                  console.clear();
+                  console.log(`Successfully added new record.`);
+                  viewEmp();
+                })
+              }else {
+                const first_name = res.first_name;
+                const last_name = res.last_name;
+                const role_id = res.role_id;
+                const manager_id = res.manager_id;
+                insertsql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ('${first_name}','${last_name}','${role_id}','${manager_id}');`;
+                db.query(insertsql, (err,res) => {
+                  if (err) {
+                    console.log(`Something went wrong. \n${err}`);
+                    return;
+                  }
+                  console.clear();
+                  console.log(`Successfully added new record.`);
+                  viewEmp();
+                })
+              }
+            })
+          break;
+  
+          case "b. Update Employee":
+          //   inquirer.prompt([
+          //     {
+          //       name: "the_id",
+          //       type: "input",
+          //       message: "Update Department- Please select the id of department you wish to update:"
+          //     }
+          //     ]).then(function(res) {
+          //       const ans_id = res.the_id;
+          //       inquirer.prompt([
+          //         {
+          //           name: "dept_name",
+          //           type: "input",
+          //           message: "Update Department- Please enter new department name:"
+          //         }
+          //         ]).then(function(res) {
+          //           const ans_dept_name = res.dept_name;
+          //           const updateSql = `UPDATE department SET dept_name = '${ans_dept_name}' WHERE id = ${ans_id};`;
+          //           db.query(updateSql, (err,res) => {
+          //               if (err) {
+          //                 console.log(`Something went wrong. \n${err}`);
+          //                 return;
+          //               }
+          //               console.clear();
+          //               console.log(`Successfully updated record.`);
+          //               viewDept();
+          //             })
+          //           })
+          //         })
+          break;
+  
+          case "c. Delete Employee":
+            inquirer.prompt([
+              {
+                name: "the_id",
+                type: "input",
+                message: "Delete Employee- Please select the id of the employee you wish to delete:"
+              }
+              ]).then(function(res) {
+                const ans = res.the_id;
+                const deleteSql = `DELETE FROM employee WHERE id = ${ans};`;
+                db.query(deleteSql, (err,res) => {
+                  if (err) {
+                    console.log(`Something went wrong. \n${err}`);
+                    return;
+                  }
+                  console.clear();
+                  console.log(`Successfully deleted record.`);
+                  viewEmp();
+                })
+              })
+          break;
+
+          case "d. Back to Main Menu":
+              welcome();
+          break;
+        }
+      })
 };
