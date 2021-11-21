@@ -36,29 +36,36 @@ const mainMenu = () => {
     message: "Main Menu- Select an option:",
     name: "choice",
     choices: [
-              "1. View Departments", 
-              "2. View Roles",
-              "3. View Employees",
+              "1. Departments", 
+              "2. Roles",
+              "3. Employees",
+              "4. Exit"
             ]
     },
     ])
     .then(res => {
       const selection = res.choice;
       switch (selection) {
-        case "1. View Departments":
+        case "1. Departments":
           console.clear();
           viewDept();
         break;
 
-        case "2. View Roles":
+        case "2. Roles":
           console.clear();
           viewRoles();
         break;
 
-        case "3. View Employees":
+        case "3. Employees":
           console.clear();
           viewEmp();
         break;
+
+        case "4. Exit":
+          console.clear();
+          process.exit(1)
+        break;
+
       }
     })
 };
