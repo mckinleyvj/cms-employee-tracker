@@ -6,6 +6,7 @@
 
 -   [Contributing](#contributing)
 -   [Installation](#installation)
+-   [Demonstration](#demonstration)
 -   [Usage](#usage)
 -   [Resources](#resources)
 -   [Author](#author)
@@ -53,6 +54,10 @@ source assets/db/seeds.sql
 ```bash
 npm run start
 ```
+
+[Back to top](#cms-employee-tracker)
+
+## Demonstration
 
 [Back to top](#cms-employee-tracker)
 
