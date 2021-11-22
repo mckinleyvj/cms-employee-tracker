@@ -65,7 +65,7 @@ Please find the demonstration video here https://watch.screencastify.com/v/UY4s4
 
 ## Usage
 
--   This project is solely used for taking notes.
+-   This project is a command line application that saves contents about a business structure.
 -   This project does not collect any bank details or personal information for misuse.
 -   This project is open source and is available to all developers that finds interest to enhancing features by raising [an issue](https://github.com/mckinleyvj/cms-employee-tracker/issues) or simply by [contacting me](#questions).
 
