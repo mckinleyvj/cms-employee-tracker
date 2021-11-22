@@ -345,7 +345,7 @@ const updateRole = () => {
 
 //EMPLOYEES
 const viewEmp = () => {
-  const empSql = `SELECT e.id, e.first_name, e.last_name, e.role_id, r.role_title, e.manager_id FROM employee e, roles r WHERE e.role_id = r.id ORDER BY e.id;`;
+  const empSql = `SELECT e.id, e.first_name, e.last_name, e.role_id, r.role_title, r.salary as Salary, e.manager_id FROM employee e, roles r WHERE e.role_id = r.id ORDER BY e.id;`;
   db.query(empSql, (err, resp) => {
     if (err) {
       console.log(`Something went wrong. \n${err}`);
